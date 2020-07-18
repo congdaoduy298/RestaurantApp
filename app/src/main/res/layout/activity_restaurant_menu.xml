@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.RestaurantMenuActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <RelativeLayout
+        android:id="@+id/llMenuHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txtMenuHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/choose_from_menu_listed_below"
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_favorite_default" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/llHeaderMenuDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/llMenuHeader"
+        android:background="@color/priceColor"
+        android:orientation="horizontal" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerMenu"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/btnProceedToCart"
+        android:layout_below="@id/llHeaderMenuDivider"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/btnProceedToCart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:text="Proceed to Cart"
+        android:textAllCaps="false"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+
+    <RelativeLayout
+        android:id="@+id/progressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
+</RelativeLayout>
