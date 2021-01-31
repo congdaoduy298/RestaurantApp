@@ -1,4 +1,4 @@
-# FoodRunner <img src="/screenshots/download-apk.png" width="150" title="Download apk">
+# FoodRunner <a href="https://github.com/amanr11314/FoodRunner/releases/download/v1.0/FoodRunner.apk" target="blank"> <img src="/screenshots/download-apk.png" width="120"  title="Download apk"> </a>
 A Food Delivery Android App with various restaurants, multiple menus. Users can mark their favorite restaurants and also track their order history.
 
 <h3>Objective</h3> 
