@@ -125,7 +125,7 @@ class RestaurantMenuActivity : AppCompatActivity() {
         val queue = Volley.newRequestQueue(this@RestaurantMenuActivity)
 
         val id = intent.getStringExtra("id")
-        restaurant_id = id.toInt()
+        restaurant_id = id!!.toInt()
         val url = "http://13.235.250.119/v2/restaurants/fetch_result/$id"
 
         if (ConnectionManager().checkConnectivity(this@RestaurantMenuActivity)) {

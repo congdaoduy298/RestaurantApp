@@ -1,43 +1,38 @@
 package com.amantech.foodrunner.activity
 
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
-import android.provider.Settings
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
+import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.amantech.foodrunner.R
-import com.amantech.foodrunner.adapter.HomeRecyclerAdapter
-import com.amantech.foodrunner.model.Restaurant
-import com.amantech.foodrunner.util.ConnectionManager
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import org.json.JSONException
-import org.json.JSONObject
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
 
-    lateinit var etMobileNumber: EditText
+    lateinit var etEmail: EditText
     lateinit var etPassword: EditText
     lateinit var btnLogin: Button
     lateinit var txtForgotPassword: TextView
     lateinit var txtSignUp: TextView
-
+    private lateinit var auth: FirebaseAuth
     lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        auth = Firebase.auth
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(
             getString(R.string.preference_profile_details),
@@ -49,7 +44,6 @@ class LoginActivity : AppCompatActivity() {
         if (isLoggedIn) {
             startHomeScreen()
         }
-
 
         setContentView(R.layout.activity_login)
 
@@ -63,111 +57,61 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
-    fun validateAndLogin() {
+    private fun accessCurrentUser(){
+        val user = Firebase.auth.currentUser
+        user?.let {
+            val uid = user.uid
+            var dataReference = FirebaseDatabase.getInstance().getReference("profiles").child(uid)
+            dataReference.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val email = snapshot.child("email").getValue(String::class.java)
+                    val address = snapshot.child("address").getValue(String::class.java)
+                    val name = snapshot.child("name").getValue(String::class.java)
+                    val mob_no = snapshot.child("mobileNumber").getValue(String::class.java)
 
-        val queue = Volley.newRequestQueue(this@LoginActivity)
-        val url = "http://13.235.250.119/v2/login/fetch_result/"
-
-        val jsonParams = JSONObject()
-        jsonParams.put("mobile_number", etMobileNumber.text.toString())
-        jsonParams.put("password", etPassword.text.toString())
-
-        if (ConnectionManager().checkConnectivity(this@LoginActivity)) {
-
-            val jsonRequest = object : JsonObjectRequest(
-                Request.Method.POST, url, jsonParams, Response.Listener {
-                    val mainData = it.getJSONObject("data")
-
-                    try {
-                        val success = mainData.getBoolean("success")
-
-                        if (success) {
-
-                            println("Login Successful!!")
-                            val data = mainData.getJSONObject("data")
-
-                            val user_id = data.getString("user_id")
-                            val name = data.getString("name")
-                            val email = data.getString("email")
-                            val mob_no = data.getString("mobile_number")
-                            val address = data.getString("address")
-
-                            //saving preferences..
-
-                            sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
-                            sharedPreferences.edit().putString("user_id", user_id).apply()
-                            sharedPreferences.edit().putString("Name", name).apply()
-                            sharedPreferences.edit().putString("MobNo", mob_no).apply()
-                            sharedPreferences.edit().putString("Email", email).apply()
-                            sharedPreferences.edit().putString("Address", address).apply()
-
-                            //starting homescreen
-                            startHomeScreen()
-
-                        }
-
-                        else {
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "Incorrect Phone or Password",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-
-                    }
-                    catch (e: JSONException) {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Some unexpected error occurred!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                },
-                Response.ErrorListener {
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Volley error occurred!!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }) {
-                override fun getHeaders(): MutableMap<String, String> {
-                    val headers = HashMap<String, String>()
-                    headers["Content-type"] = "application/json"
-                    headers["token"] = "SECRET_TOKEN_HERE"
-                    return headers
+                    Log.d("SOS", "successfully")
+                    //saving preferences..
+                    sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+                    sharedPreferences.edit().putString("Name", name).apply()
+                    sharedPreferences.edit().putString("MobNo", mob_no).apply()
+                    sharedPreferences.edit().putString("Email", email).apply()
+                    sharedPreferences.edit().putString("Address", address).apply()
+                } else {
+                    Log.d("TAG", task.exception!!.message!!) //Don't ignore potential errors!
                 }
             }
-
-            queue.add(jsonRequest)
         }
-        //for internet connectivity part
-        else {
-            val dialog = AlertDialog.Builder(this@LoginActivity)
-            dialog.setTitle("Error")
-            dialog.setMessage("Internet Connection not Found")
+    }
 
-            dialog.setPositiveButton("Open Settings") { text, listener ->
-                val settingsIntent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-                startActivity(settingsIntent)
-                finish()
+    fun validateAndLogin() {
+        val email = etEmail.text.toString()
+        val password = etPassword.text.toString()
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    accessCurrentUser()
+
+                    //starting homescreen
+                    startHomeScreen()
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Incorrect Phone or Password",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
             }
-            dialog.setNegativeButton("Exit") { text, listener ->
-                ActivityCompat.finishAffinity(this@LoginActivity)
-            }
-            dialog.create()
-            dialog.show()
-        }
-
-
     }
 
     fun validateLoginFields() =
-        (etMobileNumber.text.toString().length == 10 && etPassword.text.toString().length >= 6)
+        (etEmail.text.toString().length != 0)
 
     private fun initializeView() {
-        etMobileNumber = findViewById(R.id.etMobileNumber)
+        etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         txtForgotPassword = findViewById(R.id.txtForgotPassword)
@@ -193,19 +137,17 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
-
+            val dialog = setProgressDialog(this, "Loading..")
+            dialog.show()
             if (validateLoginFields()) {
-                /*
-                if valid information entered in login fields
-                validate from server and login
-                 */
                 validateAndLogin()
+                dialog.dismiss()
             }
             else {
                 Toast.makeText(
                     this@LoginActivity,
-                    "Incorrect credentials",
-                    Toast.LENGTH_SHORT
+                    "Please fill the email element.",
+                    Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -213,5 +155,51 @@ class LoginActivity : AppCompatActivity() {
         txtSignUp.setOnClickListener {
             startActivity(Intent(this@LoginActivity, RegisterScreen::class.java))
         }
+    }
+
+    fun setProgressDialog(context:Context, message:String): AlertDialog {
+        val llPadding = 30
+        val ll = LinearLayout(context)
+        ll.orientation = LinearLayout.HORIZONTAL
+        ll.setPadding(llPadding, llPadding, llPadding, llPadding)
+        ll.gravity = Gravity.CENTER
+        var llParam = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        llParam.gravity = Gravity.CENTER
+        ll.layoutParams = llParam
+
+        val progressBar = ProgressBar(context)
+        progressBar.isIndeterminate = true
+        progressBar.setPadding(0, 0, llPadding, 0)
+        progressBar.layoutParams = llParam
+
+        llParam = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
+        llParam.gravity = Gravity.CENTER
+        val tvText = TextView(context)
+        tvText.text = message
+        tvText.setTextColor(Color.parseColor("#000000"))
+        tvText.textSize = 20.toFloat()
+        tvText.layoutParams = llParam
+
+        ll.addView(progressBar)
+        ll.addView(tvText)
+
+        val builder = AlertDialog.Builder(context)
+        builder.setCancelable(true)
+        builder.setView(ll)
+
+        val dialog = builder.create()
+        val window = dialog.window
+        if (window != null) {
+            val layoutParams = WindowManager.LayoutParams()
+            layoutParams.copyFrom(dialog.window?.attributes)
+            layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+            layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
+            dialog.window?.attributes = layoutParams
+        }
+        return dialog
     }
 }

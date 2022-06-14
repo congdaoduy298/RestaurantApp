@@ -37,7 +37,7 @@ class ForgotPasswordDetailsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_forgot_password_details, container, false)
 
-        etMobileNumber = view.findViewById(R.id.etMobileNumber)
+        etMobileNumber = view.findViewById(R.id.etEmail)
         etEmail = view.findViewById(R.id.etEmail)
         btnNext = view.findViewById(R.id.btnNext)
 

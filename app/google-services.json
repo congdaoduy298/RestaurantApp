@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1056575320615",
+    "firebase_url": "https://foodrunner-352304-default-rtdb.firebaseio.com",
+    "project_id": "foodrunner-352304",
+    "storage_bucket": "foodrunner-352304.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056575320615:android:ccbc1326c0a1ee68a15402",
+        "android_client_info": {
+          "package_name": "com.amantech.foodrunner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056575320615-519r5og8h971802cg01sgpkd6nh0cf2q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACp92GQXoTZmgn7xxW9vYAKdAnSB9I7qw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1056575320615-519r5og8h971802cg01sgpkd6nh0cf2q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

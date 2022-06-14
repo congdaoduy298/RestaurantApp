@@ -1,11 +1,13 @@
 package com.amantech.foodrunner.activity
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -18,8 +20,13 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.firebase.database.FirebaseDatabase
 import org.json.JSONException
 import org.json.JSONObject
+import com.amantech.foodrunner.util.Profile
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class RegisterScreen : AppCompatActivity() {
 
@@ -31,11 +38,12 @@ class RegisterScreen : AppCompatActivity() {
     lateinit var etPassword: EditText
     lateinit var etConfirmPassword: EditText
     lateinit var btnRegister: Button
-
     lateinit var sharedPreferences: SharedPreferences
+    private lateinit var auth: FirebaseAuth
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        auth = Firebase.auth
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(
             getString(R.string.preference_profile_details),
@@ -60,107 +68,35 @@ class RegisterScreen : AppCompatActivity() {
             && etConfirmPassword.text.toString().length >= 6
             && (etPassword.text.toString() == etConfirmPassword.text.toString()))
 
-    fun validateAndRegister() {
+    private fun saveUserInformation(){
+        val user = Firebase.auth.currentUser
+        user?.let {
+            val uid = user.uid
 
-        val queue = Volley.newRequestQueue(this@RegisterScreen)
-        val url = "http://13.235.250.119/v2/register/fetch_result/"
+            val name = etName.text.toString()
+            val email = etEmail.text.toString()
+            val mob_no = etMobileNumber.text.toString()
+            val address = etAddress.text.toString()
+            val password = etPassword.text.toString()
 
-        val jsonParams = JSONObject()
+            val  profile = Profile (name, mob_no, password, address, email)
 
-        jsonParams.put("name", etName.text.toString())
-        jsonParams.put("mobile_number", etMobileNumber.text.toString())
-        jsonParams.put("password", etPassword.text.toString())
-        jsonParams.put("address", etAddress.text.toString())
-        jsonParams.put("email", etEmail.text.toString())
+            var dataReference = FirebaseDatabase.getInstance().getReference("profiles")
+            dataReference.child(uid).setValue(profile)
 
-        if (ConnectionManager().checkConnectivity(this@RegisterScreen)) {
+            println("Registration Successful!!")
 
-            val jsonRequest = object : JsonObjectRequest(
-                Request.Method.POST, url, jsonParams, Response.Listener {
-                    val mainData = it.getJSONObject("data")
+            //saving preferences..
 
-                    try {
-                        val success = mainData.getBoolean("success")
-                        println("success = $success")
+            sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+            sharedPreferences.edit().putString("Name", name).apply()
+            sharedPreferences.edit().putString("MobNo", mob_no).apply()
+            sharedPreferences.edit().putString("Email", email).apply()
+            sharedPreferences.edit().putString("Address", address).apply()
 
-                        //fix error during registration
-                        if (success) {
-
-                            println("Registration Successful!!")
-                            val data = mainData.getJSONObject("data")
-
-                            val user_id = data.getString("user_id")
-                            val name = data.getString("name")
-                            val email = data.getString("email")
-                            val mob_no = data.getString("mobile_number")
-                            val address = data.getString("address")
-
-                            //saving preferences..
-
-                            sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
-                            sharedPreferences.edit().putString("user_id", user_id).apply()
-                            sharedPreferences.edit().putString("Name", name).apply()
-                            sharedPreferences.edit().putString("MobNo", mob_no).apply()
-                            sharedPreferences.edit().putString("Email", email).apply()
-                            sharedPreferences.edit().putString("Address", address).apply()
-
-                            //starting homescreen
-                            startHomeScreen()
-
-                        } else {
-                            Toast.makeText(
-                                this@RegisterScreen,
-                                "Registration Failed",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-
-                    } catch (e: JSONException) {
-                        Toast.makeText(
-                            this@RegisterScreen,
-                            "Some unexpected error occurred!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                },
-                Response.ErrorListener {
-                    Toast.makeText(
-                        this@RegisterScreen,
-                        "Volley error occurred!!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }) {
-                override fun getHeaders(): MutableMap<String, String> {
-                    val headers = HashMap<String, String>()
-                    headers["Content-type"] = "application/json"
-                    headers["token"] = "SECRET_TOKEN_HERE"
-                    return headers
-                }
-            }
-
-            queue.add(jsonRequest)
+            //starting homescreen
+            startHomeScreen()
         }
-        //for internet connectivity part
-        else {
-            val dialog = AlertDialog.Builder(this@RegisterScreen)
-            dialog.setTitle("Error")
-            dialog.setMessage("Internet Connection not Found")
-
-            dialog.setPositiveButton("Open Settings") { text, listener ->
-                val settingsIntent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-                startActivity(settingsIntent)
-                finish()
-            }
-            dialog.setNegativeButton("Exit") { text, listener ->
-                ActivityCompat.finishAffinity(this@RegisterScreen)
-            }
-            dialog.create()
-            dialog.show()
-        }
-
-
     }
 
     private fun initializeView() {
@@ -177,12 +113,37 @@ class RegisterScreen : AppCompatActivity() {
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         btnRegister = findViewById(R.id.btnRegister)
 
+        var firebaseDatabase = FirebaseDatabase.getInstance()
+        var dataReference = firebaseDatabase.getReference("restaurant")
+
+        dataReference.child("0").get().addOnSuccessListener {
+            if (it.exists()){
+                var email = it.child("address").value
+                Log.d("Email", email.toString())
+            }
+        }
+
+
+
         btnRegister.setOnClickListener {
+            val progressDialog = ProgressDialog(this)
+            progressDialog.show()
 
             if (validateRegisterFields()) {
-
                 //function called for validating registration
-                validateAndRegister()
+                auth.createUserWithEmailAndPassword(etEmail.text.toString(), etPassword.text.toString())
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            progressDialog.dismiss()
+                            // Sign in success, update UI with the signed-in user's information
+                            saveUserInformation()
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(baseContext, "Create email and password failed.",
+                                Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
 
             } else {
                 Toast.makeText(
@@ -196,5 +157,6 @@ class RegisterScreen : AppCompatActivity() {
 
 
     }
+
 
 }

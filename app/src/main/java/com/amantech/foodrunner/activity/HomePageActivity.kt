@@ -41,6 +41,7 @@ class HomePageActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         )
 
+
         setContentView(R.layout.activity_home_page)
 
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -53,8 +54,8 @@ class HomePageActivity : AppCompatActivity() {
         txtHeaderName = headerView.findViewById(R.id.txtHeaderName)
         txtHeaderMobile = headerView.findViewById(R.id.txtHeaderMobile)
 
-        val name = sharedPreferences.getString("Name","DEFAULT_NAME")
-        val mobile = "+91-" + sharedPreferences.getString("MobNo","DEFAULT_MOB")
+        val name = sharedPreferences?.getString("Name","DEFAULT_NAME")
+        val mobile = "+84-" + sharedPreferences?.getString("MobNo","DEFAULT_MOB")
 
         txtHeaderName.text = name
         txtHeaderMobile.text = mobile
@@ -76,6 +77,12 @@ class HomePageActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
 
         navigationView.setNavigationItemSelectedListener {
+
+            val name = sharedPreferences?.getString("Name","DEFAULT_NAME")
+            val mobile = "+84-" + sharedPreferences?.getString("MobNo","DEFAULT_MOB")
+
+            txtHeaderName.text = name
+            txtHeaderMobile.text = mobile
 
             if (previousMenuItem != null) {
                 previousMenuItem?.isChecked = false
@@ -144,6 +151,7 @@ class HomePageActivity : AppCompatActivity() {
 
                     dialog.setPositiveButton("YES") { text, listener ->
                         sharedPreferences.edit().clear().apply()
+                        startLogIn()
                         finishAffinity()
                     }
                     dialog.setNegativeButton("NO") { text, listener ->
@@ -202,5 +210,11 @@ class HomePageActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)    //1
         supportActionBar?.setDisplayHomeAsUpEnabled(true)   //2
 
+    }
+
+    private fun startLogIn() {
+        val intent = Intent(this@HomePageActivity, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
