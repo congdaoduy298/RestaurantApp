@@ -8,8 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.foodrunner.R
 import com.amantech.foodrunner.database.ItemEntity
+import com.amantech.foodrunner.model.ItemOrder
 
-class CartItemsRecyclerAdapter(val context: Context, val cartItems: List<ItemEntity>) :
+class CartItemsRecyclerAdapter(val context: Context,private val cartItems: List<ItemOrder>) :
     RecyclerView.Adapter<CartItemsRecyclerAdapter.CartRecyclerViewHolder>() {
 
     class CartRecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -28,11 +29,11 @@ class CartItemsRecyclerAdapter(val context: Context, val cartItems: List<ItemEnt
     }
 
     override fun onBindViewHolder(holder: CartRecyclerViewHolder, position: Int) {
-        val item: ItemEntity = cartItems[position]
+        val item: ItemOrder = cartItems[position]
 
-        holder.txtItemName.text = item.itemName
-        val price = "Rs. ${item.itemPrice}"
-        holder.txtItemPrice.text = price
+        holder.txtItemName.text = item.name
+        val cost = "$" + item.price
+        holder.txtItemPrice.text = cost
     }
 
 

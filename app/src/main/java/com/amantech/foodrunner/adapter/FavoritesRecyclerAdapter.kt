@@ -17,7 +17,7 @@ import com.amantech.foodrunner.database.ResDatabase
 import com.amantech.foodrunner.database.ResEntity
 import com.squareup.picasso.Picasso
 
-class FavoritesRecyclerAdapter(val context: Context, val itemList: List<ResEntity>) :
+class FavoritesRecyclerAdapter(val context: Context,private val itemList: List<ResEntity>) :
     RecyclerView.Adapter<FavoritesRecyclerAdapter.FavoriteRecyclerViewHolder>() {
 
     class FavoriteRecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -56,7 +56,7 @@ class FavoritesRecyclerAdapter(val context: Context, val itemList: List<ResEntit
             context.startActivity(intent)
         }
 
-        val checkFav = DBAsyncTask(context, res, 1).execute()
+        /*val checkFav = DBAsyncTask(context, res, 1).execute()
         val isFav = checkFav.get()
 
         if (isFav) {
@@ -136,7 +136,7 @@ class FavoritesRecyclerAdapter(val context: Context, val itemList: List<ResEntit
             }
 
             return false
-        }
+        }*/
 
 
     }

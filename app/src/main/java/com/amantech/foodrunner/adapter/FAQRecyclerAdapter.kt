@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amantech.foodrunner.R
 import com.amantech.foodrunner.model.FAQ
 
-class FAQRecyclerAdapter(val context: Context, val itemList: List<FAQ>) :
+class FAQRecyclerAdapter(val context: Context, private val itemList: List<FAQ>) :
     RecyclerView.Adapter<FAQRecyclerAdapter.FAQRecyclerViewHolder>() {
 
     class FAQRecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {

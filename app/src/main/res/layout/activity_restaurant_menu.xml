@@ -62,21 +62,7 @@
         android:text="Proceed to Cart"
         android:textAllCaps="false"
         android:textColor="#ffffff"
-        android:textSize="18sp"
-        android:visibility="gone" />
+        android:textSize="18sp" />
 
-
-    <RelativeLayout
-        android:id="@+id/progressLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-    </RelativeLayout>
 
 </RelativeLayout>

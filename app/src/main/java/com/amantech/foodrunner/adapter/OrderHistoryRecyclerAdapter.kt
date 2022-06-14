@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amantech.foodrunner.R
 import com.amantech.foodrunner.fragment.Order
 
-class OrderHistoryRecyclerAdapter(val context: Context, val orderHistory: List<Order>) :
+class OrderHistoryRecyclerAdapter(val context: Context, private val orderHistory: List<Order>) :
     RecyclerView.Adapter<OrderHistoryRecyclerAdapter.OrderHistoryRecyclerViewHolder>() {
 
 

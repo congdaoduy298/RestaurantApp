@@ -22,6 +22,7 @@ import com.amantech.foodrunner.database.ItemDatabase
 import com.amantech.foodrunner.database.ItemEntity
 import com.amantech.foodrunner.database.ResDatabase
 import com.amantech.foodrunner.database.ResEntity
+import com.amantech.foodrunner.model.ItemOrder
 import com.amantech.foodrunner.model.Restaurant
 import com.amantech.foodrunner.util.ConnectionManager
 import com.android.volley.Request
@@ -48,7 +49,7 @@ class CartPageActivity : AppCompatActivity() {
 
     lateinit var sharedPreferences: SharedPreferences
 
-    var cartItemList = listOf<ItemEntity>()
+    lateinit var cartItemList: ArrayList<ItemOrder>
 
     var orderPlaced: Int = 0
 
@@ -72,11 +73,7 @@ class CartPageActivity : AppCompatActivity() {
         )
 
         //get cart items
-        cartItemList = RetrieveCartItems(this@CartPageActivity).execute().get()
-
-        //pass to recycler view
-        val buttonText = "Place Order(Total: Rs. ${calculateTotalCost(cartItemList)} )"
-        btnPlaceOrder.text = buttonText
+        cartItemList = arrayListOf<ItemOrder>()
 
         recyclerAdapter = CartItemsRecyclerAdapter(this@CartPageActivity, cartItemList)
         recyclerCartItems.adapter = recyclerAdapter
@@ -110,14 +107,11 @@ class CartPageActivity : AppCompatActivity() {
 
             //process payment
             val foodItems = arrayListOf<FoodItem>()
-            for (item in cartItemList) {
-                foodItems.add(FoodItem(item.item_id))
-            }
             val user_id = sharedPreferences.getString("user_id", "0")!!.toInt()
             val restaurant_id = intent.getIntExtra("restaurant_id", -1)
-            val total_cost = calculateTotalCost(cartItemList)
+//            val total_cost = calculateTotalCost(cartItemList)
             val foodItemList: List<FoodItem> = foodItems
-            val params = Params(user_id, restaurant_id, total_cost, foodItemList)
+//            val params = Params(user_id, restaurant_id, total_cost, foodItemList)
 
             val gson = GsonBuilder().create()
             val parameter = gson.toJson(params)

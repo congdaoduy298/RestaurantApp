@@ -42,14 +42,13 @@
 
 
             <TextView
-                android:id="@+id/txtResPrice"
+                android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txtRestaurantName"
                 android:layout_marginTop="20dp"
-                android:drawableLeft="@drawable/rupee_symbol_new"
                 android:padding="8dp"
-                android:text="299/person"
+                android:text="address"
                 android:textColor="@color/priceColor"
                 android:textSize="15sp" />
 

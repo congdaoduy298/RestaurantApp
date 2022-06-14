@@ -1,7 +1,8 @@
 package com.amantech.foodrunner.model
 
-data class Item(
+data class ItemOrder(
     var price: Int?=0,
+    var count: Int?=0,
     var name: String?="",
-    var url : String="",
+    var url : String?=""
 )
