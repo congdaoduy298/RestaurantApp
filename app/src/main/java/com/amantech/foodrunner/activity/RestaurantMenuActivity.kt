@@ -45,6 +45,7 @@ class RestaurantMenuActivity : AppCompatActivity() {
     lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var menuItemList: ArrayList<Item>
     private lateinit var itemOrderList: ArrayList<ItemOrder>
+    private lateinit var idItemList: ArrayList<Int>
     lateinit var btnProceedToCart: Button
     lateinit var txtMenuHeader: TextView
 
@@ -87,10 +88,12 @@ class RestaurantMenuActivity : AppCompatActivity() {
         var temp = 0
         menuItemList = arrayListOf<Item>()
         itemOrderList = arrayListOf<ItemOrder>()
+        idItemList = arrayListOf<Int>()
+
         recyclerMenu = findViewById(R.id.recyclerMenu)
 
         initializeView()
-        recyclerAdapter = RestaurantMenuAdapter(this@RestaurantMenuActivity, menuItemList, itemOrderList)
+        recyclerAdapter = RestaurantMenuAdapter(this@RestaurantMenuActivity, menuItemList, itemOrderList, idItemList)
         layoutManager = LinearLayoutManager(this@RestaurantMenuActivity)
 
         getMenudata()
@@ -102,9 +105,10 @@ class RestaurantMenuActivity : AppCompatActivity() {
 
     private fun initializeView() {
         toolbar = findViewById(R.id.toolbar)
+        val name = intent.getStringExtra("name")
         //here set title to restaurant name received in intent
         if (intent != null) {
-            toolbar.title = intent.getStringExtra("name")
+            toolbar.title = name
         } else {
             toolbar.title = "Restaurant Menu"
         }
@@ -121,8 +125,9 @@ class RestaurantMenuActivity : AppCompatActivity() {
         layoutManager = LinearLayoutManager(this@RestaurantMenuActivity)
         btnProceedToCart.setOnClickListener {
           val intent = Intent(this@RestaurantMenuActivity, CartPageActivity::class.java)
-
-           startActivity(intent)
+            intent.putExtra("name", name)
+            intent.putParcelableArrayListExtra("itemOrderList", itemOrderList)
+            startActivity(intent)
        }
     }
 

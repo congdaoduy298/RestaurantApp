@@ -52,9 +52,22 @@
         android:id="@+id/recyclerCartItems"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/btnPlaceOrder"
         android:layout_below="@id/llHeaderMenuDivider"
+        android:layout_marginTop="63dp"
         android:padding="10dp" />
+
+    <TextView
+        android:id="@+id/txtTotalCost"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="135dp"
+        android:layout_marginTop="620dp"
+        android:fontFamily="sans-serif-light"
+        android:padding="10dp"
+        android:text=""
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btnPlaceOrder"
@@ -63,7 +76,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary"
         android:fontFamily="sans-serif-medium"
-        android:text="Place Order(Total: Rs. 120)"
+        android:text="Place Order"
         android:textAllCaps="false"
         android:textColor="#ffffff"
         android:textSize="18sp" />

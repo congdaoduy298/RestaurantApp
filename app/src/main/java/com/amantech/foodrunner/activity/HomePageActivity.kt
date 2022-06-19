@@ -161,12 +161,6 @@ class HomePageActivity : AppCompatActivity() {
                     }
                     dialog.create()
                     dialog.show()
-
-                    //in case move to home screen
-                    /*
-                    val intent = Intent(this@HomePageActivity, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish()*/
                 }
 
             }

@@ -14,7 +14,8 @@ import com.squareup.picasso.Picasso
 
 class RestaurantMenuAdapter(val context: Context,
                             private val itemList: ArrayList<Item>,
-                            private val itemOrderList: ArrayList<ItemOrder>
+                            private val itemOrderList: ArrayList<ItemOrder>,
+                            private val idItemList: ArrayList<Int>
 ) :
     RecyclerView.Adapter<RestaurantMenuAdapter.RestaurantMenuViewHolder>() {
 
@@ -53,132 +54,28 @@ class RestaurantMenuAdapter(val context: Context,
         holder.btnAddItem.setOnClickListener {
             temp = temp + 1
             val currentItem = ItemOrder(menuItem.price, temp, menuItem.name, menuItem.url)
-            if (itemOrderList.contains(currentItem)) {
-                val index: Int = itemOrderList.indexOf(currentItem)
-                itemOrderList.removeAt(index)
-                val currentItem = ItemOrder(menuItem.price, temp, menuItem.name, menuItem.url)
-                itemOrderList.add(index, currentItem)
+            if (idItemList.contains(position)) {
+                val index: Int = idItemList.indexOf(position)
+                itemOrderList.set(index, currentItem)
             }
-            else itemOrderList.add(currentItem)
-            Log.d("SOS", itemOrderList.toString())
+            else {
+                itemOrderList.add(currentItem)
+                idItemList.add(position)
+            }
             holder.count.setText(temp.toString())
-            itemOrderList.add(currentItem)
         }
         holder.btnRm.setOnClickListener {
-            if (temp==0){
-                temp=0
-            }else{
+            if (temp > 0){
                 temp = temp - 1
+                val index: Int = idItemList.indexOf(position)
+                if (temp == 0) itemOrderList.removeAt(index)
+                else {
+                    val currentItem = ItemOrder(menuItem.price, temp, menuItem.name, menuItem.url)
+                    itemOrderList.set(index, currentItem)
+                }
                 holder.count.setText(temp.toString())
-                itemOrderList.removeLast()
             }
         }
-        //        btnAddItem.setOnClickListener {
-//            temp = temp + 1
-//            count.setText(temp.toString())
-//        }
-//        btnRm.setOnClickListener {
-//            if (temp==0){
-//                Toast.makeText(this, "No Item", Toast.LENGTH_SHORT).show()
-//            }else{
-//                temp = temp - 1
-//                count.setText(temp.toString())
-//            }
-//        }
-//        val itemEntity = ItemEntity(
-//            menuItem.id.toInt(),
-//            menuItem.name,
-//            menuItem.cost_for_one
-//        )
-
-        //check if cart is empty or not
-
-
-//        holder.btnAddItem.setOnClickListener {
-////                //if successfully added to cart
-////                if (result) {
-////                    //change text of button to "Remove"
-////                    holder.btnAddItem.text = "Remove"
-////                    //change background of button to "Yellow"
-//            val removeColor =
-//                ContextCompat.getColor(holder.btnAddItem.context, R.color.cartYellowColor)
-//            holder.btnAddItem.setBackgroundColor(removeColor)
-//
-//            holder.btnAddItem.text = "Add"
-////                    //change background of button to "Primary Color"
-//            val addColor =
-//                ContextCompat.getColor(holder.btnAddItem.context, R.color.colorPrimary)
-//            holder.btnAddItem.setBackgroundColor(addColor)
-//                } else {
-//                    //some error occurred while adding to database
-//                    Toast.makeText(context, "Some error occurred", Toast.LENGTH_SHORT).show()
-//                }
-//
-//            }
-//
-//            if (context is RestaurantMenuActivity) {
-//                val myActivity = context
-//                //CHECK
-//                //if cart is empty
-//                if (DBAsyncTask(holder.btnAddItem.context, itemEntity, 4).execute().get()) {
-//                    myActivity.enableProceedToCart()
-//
-//                } else {
-//                    myActivity.disableProceedToCart()
-//                }
-//            }
-//
-//        }
-//    }
-//
-//
-//    class DBAsyncTask(val context: Context, val itemEntity: ItemEntity, val mode: Int) :
-//        AsyncTask<Void, Void, Boolean>() {
-//
-//
-//        private val db = Room.databaseBuilder(context, ItemDatabase::class.java, "cart-db").build()
-//
-//        /*
-//        Mode1->Check DB if item is in cart or not
-//        Mode2->Add the item into cart
-//        Mode3->Remove the item from cart
-//        Mode4->Remove all item from cart
-//        Mode5->Check if cart is empty or not
-//         */
-//
-//        override fun doInBackground(vararg params: Void?): Boolean {
-//
-//            when (mode) {
-//                1 -> {
-////                    Check DB if item is in cart or not
-//                    val item: ItemEntity? = db.itemDao().getItemById(itemEntity.item_id.toString())
-//                    db.close()
-//                    return item != null
-//                }
-//                2 -> {
-////                    Add the item into cart
-//                    db.itemDao().insertItem(itemEntity)
-//                    db.close()
-//                    return true
-//                }
-//                3 -> {
-////                    Remove the item from cart
-//                    db.itemDao().deleteItem(itemEntity)
-//                    db.close()
-//                    return true
-//                }
-//                4 -> {
-////                    Get all items and check it the length of list is 0 or not
-//                    val cartItems = db.itemDao().getAllItems()
-//                    db.close()
-//                    return cartItems.size > 0
-//                }
-//            }
-//
-//            return false
-//        }
-
-
     }
 
 }

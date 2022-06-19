@@ -56,8 +56,8 @@ class HomeRecyclerAdapter (val context: Context, private val itemList: ArrayList
 
         holder.llContent.setOnClickListener {
             val intent = Intent(context, RestaurantMenuActivity::class.java)
-            //intent.putExtra("id", res.id)
             intent.putExtra("position", position.toString())
+            intent.putExtra("name", res.name)
             context.startActivity(intent)
       }
 

@@ -15,6 +15,7 @@ class CartItemsRecyclerAdapter(val context: Context,private val cartItems: List<
 
     class CartRecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtItemName: TextView = view.findViewById(R.id.txtItemName)
+        val txtNumItem: TextView = view.findViewById(R.id.txtNumItem)
         val txtItemPrice: TextView = view.findViewById(R.id.txtItemPrice)
     }
 
@@ -32,6 +33,7 @@ class CartItemsRecyclerAdapter(val context: Context,private val cartItems: List<
         val item: ItemOrder = cartItems[position]
 
         holder.txtItemName.text = item.name
+        holder.txtNumItem.text = item.count.toString()
         val cost = "$" + item.price
         holder.txtItemPrice.text = cost
     }
