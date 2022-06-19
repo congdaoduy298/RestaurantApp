@@ -70,7 +70,6 @@ class LoginActivity : AppCompatActivity() {
                     val name = snapshot.child("name").getValue(String::class.java)
                     val mob_no = snapshot.child("mobileNumber").getValue(String::class.java)
 
-                    Log.d("SOS", "successfully")
                     //saving preferences..
                     sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
                     sharedPreferences.edit().putString("Name", name).apply()

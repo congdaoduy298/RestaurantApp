@@ -52,7 +52,6 @@ class CartPageActivity : AppCompatActivity() {
 
         itemOrderList = arrayListOf<ItemOrder>()
         initializeView()
-        Log.d("SOS CarPage 2", itemOrderList.toString())
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.preference_profile_details),
@@ -83,7 +82,6 @@ class CartPageActivity : AppCompatActivity() {
             val total_cost = calculateTotalCost(itemOrderList!!)
             txtTotalCost.text = "Total: $" + total_cost.toString()
             intent.putExtra("itemOrderList", itemOrderList)
-            Log.d("SOS CarPage 1","Total: " + total_cost.toString())
         }
 
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder)

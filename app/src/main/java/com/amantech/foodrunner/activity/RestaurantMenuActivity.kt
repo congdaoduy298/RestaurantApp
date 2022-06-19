@@ -64,12 +64,9 @@ class RestaurantMenuActivity : AppCompatActivity() {
                     for (menusSnapshot in snapshot.children) {
                         val itemlist = menusSnapshot.getValue(Item::class.java)
                         menuItemList.add(itemlist!!)
-                        //Log.d("khang",res.address.toString())
                     }
-                    Log.d("cailonnguhoc", menuItemList.toString())
                     recyclerMenu.adapter = recyclerAdapter
                     recyclerMenu.layoutManager = layoutManager
-                    //Log.d("khang1","ok")
                 }
 
             }

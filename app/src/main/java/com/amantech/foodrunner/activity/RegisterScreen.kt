@@ -119,7 +119,6 @@ class RegisterScreen : AppCompatActivity() {
         dataReference.child("0").get().addOnSuccessListener {
             if (it.exists()){
                 var email = it.child("address").value
-                Log.d("Email", email.toString())
             }
         }
 
