@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -90,10 +87,28 @@ class CartPageActivity : AppCompatActivity() {
         }
 
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder)
-
         btnPlaceOrder.setOnClickListener {
             orderPlaced = 1
             progressLayout.visibility = View.VISIBLE
         }
+    }
+    override fun onBackPressed() {
+        when (orderPlaced) {
+            0 -> {
+                super.onBackPressed()
+            }
+            1 -> {
+                Toast.makeText(
+                    this@CartPageActivity,
+                    "Please wait while payment is processing!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }
