@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.MenuItem
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -41,7 +42,6 @@ class HomePageActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         )
 
-
         setContentView(R.layout.activity_home_page)
 
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -56,6 +56,8 @@ class HomePageActivity : AppCompatActivity() {
 
         val name = sharedPreferences?.getString("Name","DEFAULT_NAME")
         val mobile = "+84-" + sharedPreferences?.getString("MobNo","DEFAULT_MOB")
+        Log.d("Home Page - name", name.toString())
+        Log.d("Home Page - mobile", mobile.toString())
 
         txtHeaderName.text = name
         txtHeaderMobile.text = mobile
@@ -77,13 +79,11 @@ class HomePageActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
 
         navigationView.setNavigationItemSelectedListener {
-
             val name = sharedPreferences?.getString("Name","DEFAULT_NAME")
             val mobile = "+84-" + sharedPreferences?.getString("MobNo","DEFAULT_MOB")
 
             txtHeaderName.text = name
             txtHeaderMobile.text = mobile
-
             if (previousMenuItem != null) {
                 previousMenuItem?.isChecked = false
             }
@@ -210,5 +210,10 @@ class HomePageActivity : AppCompatActivity() {
         val intent = Intent(this@HomePageActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // And put the SharedPreferences test here
     }
 }

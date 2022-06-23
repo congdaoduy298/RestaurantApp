@@ -44,7 +44,6 @@ class HomeRecyclerAdapter (val context: Context, private val itemList: ArrayList
     }
 
     override fun onBindViewHolder(holder: HomeRecyclerViewHolder, position: Int) {
-        Log.d("ccngungoc",position.toString())
 
         val res: Restaurant = itemList[position]
         holder.txtResName.text = res.name
@@ -52,7 +51,6 @@ class HomeRecyclerAdapter (val context: Context, private val itemList: ArrayList
         //holder.txtResRating.text = res.rating
         Picasso.get().load(res.image).error(R.drawable.food_runner_logo)
             .into(holder.imgResImage)
-        Log.d("ccngungoc",res.name.toString())
 
         holder.llContent.setOnClickListener {
             val intent = Intent(context, RestaurantMenuActivity::class.java)

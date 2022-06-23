@@ -13,8 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.foodrunner.R
 import com.amantech.foodrunner.adapter.CartItemsRecyclerAdapter
+import com.amantech.foodrunner.adapter.HomeRecyclerAdapter
 import com.amantech.foodrunner.database.ItemEntity
 import com.amantech.foodrunner.model.ItemOrder
+import com.amantech.foodrunner.model.Order
+import com.amantech.foodrunner.model.Restaurant
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class CartPageActivity : AppCompatActivity() {
 
@@ -33,7 +43,7 @@ class CartPageActivity : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
 
     private var itemOrderList: ArrayList<ItemOrder>? = null
-
+    private var orderHistory: Order? = null
 
     var orderPlaced: Int = 0
 
@@ -75,11 +85,13 @@ class CartPageActivity : AppCompatActivity() {
 
         progressLayout = findViewById(R.id.progressLayout)
         progressBar = findViewById(R.id.progressBar)
+        val restaurantName = intent.getStringExtra("name")
+        var total_cost = 0
 
         if (intent != null) {
-            txtRestaurantName.text = intent.getStringExtra("name")//name as restaurant name
+            txtRestaurantName.text = restaurantName
             itemOrderList = intent.getParcelableArrayListExtra("itemOrderList")
-            val total_cost = calculateTotalCost(itemOrderList!!)
+            total_cost = calculateTotalCost(itemOrderList!!)
             txtTotalCost.text = "Total: $" + total_cost.toString()
             intent.putExtra("itemOrderList", itemOrderList)
         }
@@ -87,22 +99,34 @@ class CartPageActivity : AppCompatActivity() {
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder)
         btnPlaceOrder.setOnClickListener {
             orderPlaced = 1
-            progressLayout.visibility = View.VISIBLE
+            val user = Firebase.auth.currentUser
+            val uid = user!!.uid
+            Toast.makeText(
+                this@CartPageActivity,
+                "Place order successfully!",
+                Toast.LENGTH_SHORT
+            ).show()
+            var dataReference = FirebaseDatabase.getInstance().getReference("profiles").child(uid)
+            dataReference.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val numPreviousOrder =
+                        snapshot.child("numPreviousOrder").getValue(Int::class.java)
+                    val current = LocalDateTime.now()
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                    val formatted = current.format(formatter)
+                    orderHistory = Order(restaurantName, total_cost, formatted, itemOrderList!!)
+                    dataReference.child("listOrder").child(numPreviousOrder.toString()).setValue(orderHistory)
+                    dataReference.child("numPreviousOrder").setValue(numPreviousOrder!! + 1)
+                } else {
+                    Log.d("TAG", task.exception!!.message!!) //Don't ignore potential errors!
+                }
+            }
         }
     }
+
     override fun onBackPressed() {
-        when (orderPlaced) {
-            0 -> {
-                super.onBackPressed()
-            }
-            1 -> {
-                Toast.makeText(
-                    this@CartPageActivity,
-                    "Please wait while payment is processing!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+        super.onBackPressed()
     }
 
     override fun onSupportNavigateUp(): Boolean {

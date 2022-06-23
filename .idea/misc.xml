@@ -5,16 +5,18 @@
       <map>
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/drawable/edit_text_daw.xml" value="0.1" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/activity_cart_page.xml" value="0.2" />
+        <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/activity_forgot_password.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/activity_home_page.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/activity_login.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/activity_register_screen.xml" value="0.1" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/fragment_favorites.xml" value="0.1" />
-        <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/fragment_forgot_password_details.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/fragment_forgot_password_details.xml" value="0.264" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/fragment_forgot_password_o_t_p.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/fragment_profile.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/recycler_cart_single_item.xml" value="0.13489583333333333" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/recycler_favorite_single_row.xml" value="0.1" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/recycler_home_single_restaurant.xml" value="0.264" />
+        <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/layout/recycler_single_restaurant_history.xml" value="0.2" />
         <entry key="..\:/Users/Victus/StudioProjects/FoodRunner/app/src/main/res/menu/menu_drawer.xml" value="0.136" />
       </map>
     </option>

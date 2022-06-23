@@ -1,16 +1,18 @@
 package com.amantech.foodrunner.activity
 
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
@@ -32,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         auth = Firebase.auth
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(
@@ -76,6 +79,7 @@ class LoginActivity : AppCompatActivity() {
                     sharedPreferences.edit().putString("MobNo", mob_no).apply()
                     sharedPreferences.edit().putString("Email", email).apply()
                     sharedPreferences.edit().putString("Address", address).apply()
+                    Log.d("Address", address.toString())
                 } else {
                     Log.d("TAG", task.exception!!.message!!) //Don't ignore potential errors!
                 }
@@ -89,11 +93,21 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    accessCurrentUser()
-
-                    //starting homescreen
-                    startHomeScreen()
+                    val user = Firebase.auth.currentUser
+                    if (user!!.isEmailVerified()){
+                        // Sign in success, update UI with the signed-in user's information
+                        accessCurrentUser()
+                        //starting homescreen
+                        startHomeScreen()
+                    }
+                    else {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Please verify your email first!",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
                 } else {
                     // If sign in fails, display a message to the user.
                     Toast.makeText(

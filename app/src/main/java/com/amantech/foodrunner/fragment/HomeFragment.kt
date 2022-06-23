@@ -41,12 +41,9 @@ class HomeFragment : Fragment() {
                    for (restaurantSnapshot in snapshot.children) {
                        val res = restaurantSnapshot.getValue(Restaurant::class.java)
                        listRes.add(res!!)
-                       Log.d("khang",res.address.toString())
                    }
-                   Log.d("ccnguvlz", listRes.toString())
                    recyclerHome.adapter = context?.let { HomeRecyclerAdapter(it,listRes) }
                    recyclerHome.layoutManager = layoutManager
-                   Log.d("khang1","ok")
                }
 
             }

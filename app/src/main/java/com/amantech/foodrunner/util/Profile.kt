@@ -5,5 +5,6 @@ data class Profile (
     val MobileNumber: String? = null,
     val Password: String? = null,
     val Address: String? = null,
-    val Email: String? = null
+    val Email: String? = null,
+    val NumPreviousOrder: Int? =0
 )

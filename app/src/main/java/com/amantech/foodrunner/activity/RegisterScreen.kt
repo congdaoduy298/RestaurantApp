@@ -38,17 +38,12 @@ class RegisterScreen : AppCompatActivity() {
     lateinit var etPassword: EditText
     lateinit var etConfirmPassword: EditText
     lateinit var btnRegister: Button
-    lateinit var sharedPreferences: SharedPreferences
     private lateinit var auth: FirebaseAuth
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         auth = Firebase.auth
         super.onCreate(savedInstanceState)
-        sharedPreferences = getSharedPreferences(
-            getString(R.string.preference_profile_details),
-            Context.MODE_PRIVATE
-        )
         setContentView(R.layout.activity_register_screen)
         initializeView()
 
@@ -88,14 +83,18 @@ class RegisterScreen : AppCompatActivity() {
 
             //saving preferences..
 
-            sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
-            sharedPreferences.edit().putString("Name", name).apply()
-            sharedPreferences.edit().putString("MobNo", mob_no).apply()
-            sharedPreferences.edit().putString("Email", email).apply()
-            sharedPreferences.edit().putString("Address", address).apply()
+            user!!.sendEmailVerification()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("Register Logs", "Email sent. Please verify your email address.")
+                        if (user.isEmailVerified()){
+                            Toast.makeText(baseContext, "Verify email successful.", Toast.LENGTH_SHORT).show()
+                            //starting homescreen
+                            startHomeScreen()
+                        }
+                    }
+                }
 
-            //starting homescreen
-            startHomeScreen()
         }
     }
 
@@ -112,17 +111,6 @@ class RegisterScreen : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         btnRegister = findViewById(R.id.btnRegister)
-
-        var firebaseDatabase = FirebaseDatabase.getInstance()
-        var dataReference = firebaseDatabase.getReference("restaurant")
-
-        dataReference.child("0").get().addOnSuccessListener {
-            if (it.exists()){
-                var email = it.child("address").value
-            }
-        }
-
-
 
         btnRegister.setOnClickListener {
             val progressDialog = ProgressDialog(this)
@@ -155,6 +143,15 @@ class RegisterScreen : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
 

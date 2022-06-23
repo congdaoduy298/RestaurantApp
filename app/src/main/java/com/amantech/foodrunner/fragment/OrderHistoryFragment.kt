@@ -1,36 +1,31 @@
 package com.amantech.foodrunner.fragment
 
-import android.app.Activity
+import android.content.ClipData
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.foodrunner.R
 import com.amantech.foodrunner.adapter.OrderHistoryRecyclerAdapter
-import com.amantech.foodrunner.util.ConnectionManager
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.recycler_single_restaurant_history.*
-import org.json.JSONException
+import com.amantech.foodrunner.model.ItemOrder
+import com.amantech.foodrunner.model.Order
+import com.amantech.foodrunner.model.Restaurant
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 
 class OrderHistoryFragment : Fragment() {
 
     lateinit var recyclerRestaurant: RecyclerView
     lateinit var layoutManager: RecyclerView.LayoutManager
     lateinit var recyclerAdapter: OrderHistoryRecyclerAdapter
-    lateinit var progressLayout: RelativeLayout
-    lateinit var progressBar: ProgressBar
+    lateinit var orderHistoryList: ArrayList<Order>
+    lateinit var itemOrderList: ArrayList<ItemOrder>
 
 
     override fun onCreateView(
@@ -39,9 +34,6 @@ class OrderHistoryFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_order_history, container, false)
         recyclerRestaurant = view.findViewById(R.id.recyclerRestaurant)
-        progressLayout = view.findViewById(R.id.progressLayout)
-        progressBar = view.findViewById(R.id.progressBar)
-        progressLayout.visibility = View.VISIBLE
         layoutManager = LinearLayoutManager(activity)
 
 
@@ -50,117 +42,62 @@ class OrderHistoryFragment : Fragment() {
             Context.MODE_PRIVATE
         )
 
-
-        val queue = Volley.newRequestQueue(activity as Context)
-
-        val user_id = sharedPreferences?.getString("user_id", "DEFAULT_USER_ID")
-        val url = "http://13.235.250.119/v2/orders/fetch_result/$user_id"
-
-        if (ConnectionManager().checkConnectivity(activity as Context)) {
-
-            val jsonObjectRequest =
-                object : JsonObjectRequest(
-                    Request.Method.GET, url, null, Response.Listener {
-                        val mainData = it.getJSONObject("data")
-
-                        try {
-                            progressLayout.visibility = View.GONE
-                            val success = mainData.getBoolean("success")
+        orderHistoryList = arrayListOf<Order>()
 
 
-                            if (success) {
-                                val gson = GsonBuilder().create()
-                                val orderHistory =
-                                    gson.fromJson(mainData.toString(), OrderHistory::class.java)
 
+        val user = Firebase.auth.currentUser
+        user?.let {
+            val uid = user.uid
+            var dataReference = FirebaseDatabase.getInstance().getReference("profiles").child(uid)
+            dataReference.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val numPreviousOrder =
+                        snapshot.child("numPreviousOrder").getValue(Int::class.java)
 
-                                //for recycler view part
-                                recyclerAdapter = OrderHistoryRecyclerAdapter(
-                                    activity as Context,
-                                    orderHistory.data
-                                )
+                    for (item: Int in 0..numPreviousOrder!!.minus(1)) {
 
-                                recyclerRestaurant.adapter = recyclerAdapter
-                                recyclerRestaurant.layoutManager = layoutManager
+                        val restaurantName = snapshot.child("listOrder").child(item.toString()).child("restaurant_name").getValue(String::class.java)
+                        val orderPlacedAt = snapshot.child("listOrder").child(item.toString()).child("order_placed_at").getValue(String::class.java)
+                        val total_cost = snapshot.child("listOrder").child(item.toString()).child("total_cost").getValue(Int::class.java)
 
-
-                            } else {
-                                Toast.makeText(
-                                    activity as Context,
-                                    "Some Error Occurred!!!",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                            }
-
-                        } catch (e: JSONException) {
-                            Toast.makeText(
-                                activity as Context,
-                                "Some unexpected error occurred!!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        itemOrderList = arrayListOf<ItemOrder>()
+                        for (restaurantSnapshot in snapshot.child("listOrder").child(item.toString()).child("food_items").children) {
+                            val itemOrder = restaurantSnapshot.getValue(ItemOrder::class.java)
+                            itemOrderList.add(itemOrder!!)
                         }
+                        Log.d("Item Order List", itemOrderList.toString())
+                        val orderHistory = Order(restaurantName, total_cost, orderPlacedAt!!, itemOrderList)
+                        orderHistoryList.add(orderHistory!!)
+                        recyclerAdapter = OrderHistoryRecyclerAdapter(
+                            activity as Context,
+                            orderHistoryList
+                        )
 
-
-                    },
-                    Response.ErrorListener {
-                        //Handle Errors
-                        if (activity != null) {
-                            Toast.makeText(
-                                activity as Context,
-                                "Volley error occurred!!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }) {
-                    override fun getHeaders(): MutableMap<String, String> {
-                        val headers = HashMap<String, String>()
-                        headers["Content-type"] = "application/json"
-                        headers["token"] = "SECRET_TOKEN_HERE"
-                        return headers
+                        recyclerRestaurant.adapter = recyclerAdapter
+                        recyclerRestaurant.layoutManager = layoutManager
                     }
+
+                } else {
+                    Log.d("TAG", task.exception!!.message!!) //Don't ignore potential errors!
                 }
-
-            queue.add(jsonObjectRequest)
-
-        } else {
-            val dialog = android.app.AlertDialog.Builder(activity as Context)
-            dialog.setTitle("Error")
-            dialog.setMessage("Internet Connection not Found")
-
-            dialog.setPositiveButton("Open Settings") { text, listener ->
-                val settingsIntent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-                startActivity(settingsIntent)
-                activity?.finish()
             }
-            dialog.setNegativeButton("Exit") { text, listener ->
-                ActivityCompat.finishAffinity(activity as Activity)
-            }
-            dialog.create()
-            dialog.show()
         }
+
+        Log.d("Order History List", orderHistoryList.toString())
+        recyclerAdapter = OrderHistoryRecyclerAdapter(
+            activity as Context,
+            orderHistoryList
+        )
+
+        recyclerRestaurant.adapter = recyclerAdapter
+        recyclerRestaurant.layoutManager = layoutManager
 
         return view
     }
-
-
 }
 
 
-class OrderHistory(
-    val data: List<Order>
-)
 
-class Order(
-    val order_id: Int,
-    val restaurant_name: String,
-    val total_cost: Int,
-    val order_placed_at: String,//try with date type also
-    val food_items: List<FoodItem>
-)
 
-class FoodItem(
-    val food_item_id: Int,
-    val name: String,
-    val cost: Int
-)

@@ -13,10 +13,6 @@ import com.amantech.foodrunner.fragment.HomeFragment
 
 class ForgotPassword : AppCompatActivity() {
 
-    lateinit var etMobileNumber: EditText
-    lateinit var etEmail: EditText
-    lateinit var btnNext: Button
-
     lateinit var frameLayout: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,9 +27,4 @@ class ForgotPassword : AppCompatActivity() {
             .commit()
 
     }
-
-    private fun validateFields() =
-        etMobileNumber.text.toString().length == 10 && etEmail.text.toString().isNotEmpty()
-
-
 }

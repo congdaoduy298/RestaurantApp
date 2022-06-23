@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.foodrunner.R
-import com.amantech.foodrunner.fragment.Order
+import com.amantech.foodrunner.model.Order
 
 class OrderHistoryRecyclerAdapter(val context: Context, private val orderHistory: List<Order>) :
     RecyclerView.Adapter<OrderHistoryRecyclerAdapter.OrderHistoryRecyclerViewHolder>() {
@@ -41,12 +41,13 @@ class OrderHistoryRecyclerAdapter(val context: Context, private val orderHistory
     override fun onBindViewHolder(holder: OrderHistoryRecyclerViewHolder, position: Int) {
 
         //for not recycling view holders
-        holder.setIsRecyclable(false)
+//        holder.setIsRecyclable(false)
 
         val order = orderHistory[position]
         holder.txtRestaurantName.text = order.restaurant_name
 
-        val date = order.order_placed_at.subSequence(0, 8) as String
+//        val date = order.order_placed_at.subSequence(0, 10) as String
+        val date = order.order_placed_at
         val myDate = date.replace("-", "/")
         holder.txtOrderDate.text = myDate
 
@@ -58,12 +59,14 @@ class OrderHistoryRecyclerAdapter(val context: Context, private val orderHistory
                 inflater?.inflate(R.layout.recycler_cart_single_item, null) as LinearLayout
 
             val txtItemName: TextView = llSingleItem.findViewById(R.id.txtItemName)
-
+            val txtNumItem: TextView = llSingleItem.findViewById(R.id.txtNumItem)
             val txtItemPrice: TextView = llSingleItem.findViewById(R.id.txtItemPrice)
 
             val itemName = item.name
-            val itemCost = "Rs. ${item.cost}"
+            val itemCount = item.count
+            val itemCost = "$ ${item.price}"
             txtItemName.text = itemName
+            txtNumItem.text = itemCount.toString()
             txtItemPrice.text = itemCost
 
             holder.llFoodItems.addView(llSingleItem)
